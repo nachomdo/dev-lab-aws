@@ -13,15 +13,12 @@ brew install hashicorp/tap/vault
 brew install --cask openvpn-connect
 
 
-
 # apply terraform
 Fork this repo and https://github.com/rohits-dev/dev-lab-k8s-aws 
 Change variables to run to create resources for you.
 
 
-
 Update the terraform.tfvars as per you.
-
 
 ```
 GITHUB_OWNER = "<your-github-account>"
@@ -33,6 +30,14 @@ TARGET_PATH = ""
 
 AWS_REGION      = "<your-desired-region>"
 RESOURCE_PREFIX = "<your-name/any-prefix>"
+```
+
+Update the hardcoded Owner tag to your email on the provider.tf file. 
+
+Download terraform modules 
+
+```bash
+terraform init
 ```
 
 ## apply changes
