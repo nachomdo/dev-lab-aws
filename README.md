@@ -13,15 +13,12 @@ brew install hashicorp/tap/vault
 brew install --cask openvpn-connect
 
 
-
 # apply terraform
 Fork this repo and https://github.com/rohits-dev/dev-lab-k8s-aws 
 Change variables to run to create resources for you.
 
 
-
 Update the terraform.tfvars as per you.
-
 
 ```
 GITHUB_OWNER = "<your-github-account>"
@@ -33,6 +30,14 @@ TARGET_PATH = ""
 
 AWS_REGION      = "<your-desired-region>"
 RESOURCE_PREFIX = "<your-name/any-prefix>"
+```
+
+Update the hardcoded Owner tag to your email on the provider.tf file. 
+
+Download terraform modules 
+
+```bash
+terraform init
 ```
 
 ## apply changes
@@ -83,4 +88,28 @@ For ease you can run below commands to add the root ca to trusted root on your m
 ```bash
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./generated_certs/root_ca.crt
 sudo security remove-trusted-cert -d  ./generated_certs/root_ca.crt   
+```
+
+# troubleshooting
+
+1. Trying to `terraform plan` with ADD_FLUXCD=true results in the error below 
+
+```
+│ Error: Invalid for_each argument
+│ 
+│   on ../../../modules/kubernetes-addons/fluxcd/main.tf line 15, in resource "kubectl_manifest" "apply":
+│   15:   for_each   = { for v in local.install : lower(join("/", compact([v.data.apiVersion, v.data.kind, lookup(v.data.metadata, "namespace", ""), v.data.metadata.name]))) => v.content }
+│     ├────────────────
+│     │ local.apply will be known only after apply
+│ 
+│ The "for_each" value depends on resource attributes that cannot be determined until apply,
+│ so Terraform cannot predict how many instances will be created. To work around this, use
+│ the -target argument to first apply only the resources that the for_each depends on.
+```
+
+Solution: Removed depends_on block on fluxcd module in add-ons.tf file [https://github.com/fluxcd/terraform-provider-flux/issues/242](https://github.com/fluxcd/terraform-provider-flux/issues/242)
+
+2. Lack of idempotency when running add-ons modules (e.g., Vault) 
+
+
 ```
